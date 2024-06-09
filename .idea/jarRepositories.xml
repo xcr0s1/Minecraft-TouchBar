@@ -36,5 +36,15 @@
       <option name="name" value="ParchmentMC" />
       <option name="url" value="https://maven.parchmentmc.org/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://nrnb-nexus.ucsd.edu/repository/cytoscape_thirdparty/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven.cyberduck.io-release" />
+      <option name="name" value="maven.cyberduck.io-release" />
+      <option name="url" value="http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/" />
+    </remote-repository>
   </component>
 </project>

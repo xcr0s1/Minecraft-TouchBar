@@ -122,6 +122,8 @@ repositories {
 
     
     maven{ name = 'mojang'; url = 'https://libraries.minecraft.net' }
+    maven{url = 'https://nrnb-nexus.ucsd.edu/repository/cytoscape_thirdparty/'}
+    maven{name = 'maven.cyberduck.io-release'; url = 'http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/'; allowInsecureProtocol = true}
 
 }
 
@@ -152,6 +154,11 @@ dependencies {
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
     //implementation('net.minecraftforge:forge:1.20.6-50.1.0_mapped_official_1.20.6')
     implementation 'com.thizzer.jtouchbar:jtouchbar:1.0.0'
+    // https://mvnrepository.com/artifact/com.apple.developer/AppleJavaExtensions
+    implementation 'com.apple.developer:AppleJavaExtensions:1.6'
+
+    implementation 'org.rococoa:rococoa-core:0.9.1'
+    implementation 'org.rococoa:librococoa:0.9.1'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -2,6 +2,9 @@ package com.mctouchbar;
 
 import com.sun.jna.platform.unix.X11;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.thizzer.jtouchbar.JTouchBar;
 import com.thizzer.jtouchbar.item.TouchBarItem;
@@ -22,9 +25,8 @@ import java.io.InputStream;
 //import com.apple.jobjc.appkit.NSApplicationClass;
 //import com.apple.jobjc.foundation.NSString;
 //import com.apple.jobjc.cocoa.NSWindow;
-
-
-
+import com.apple.eawt.CocoaComponent;
+import org.lwjgl.glfw.GLFWNativeCocoa;
 
 
 @Mod("NeoMCTouchBar")
@@ -58,15 +60,16 @@ public class MCTouchBar {
 	public static Image INVIS_IMAGE = getTouchBarImageForPath("/assets/invisibility.png");
 
 
+
 	@SubscribeEvent
-	public void preInit(FMLPreInitializationEvent event)
+	public void preInit(FMLCommonSetupEvent event)
 	{
-		logger = event.getModLog();
+		logger = LogManager.getLogger(MODID);
 	}
 	
 
-	@EventHandler
-	public void init(FMLInitializationEvent event)
+	@SubscribeEvent
+	public void init(FMLLoadCompleteEvent event)
 	{
 		logger.info("Mod initlialised :" + NAME);
 		MinecraftForge.EVENT_BUS.register(new PlayerEvent());
@@ -156,7 +159,11 @@ public class MCTouchBar {
 		long output = -1;
 
 		//FIXME
-		Method implementation = Display.class.getDeclaredMethod("getImplementation");
+		return GLFWNativeCocoa.glfwGetCocoaWindow(GLFWNativeCocoa.Functions.GetCocoaWindow);
+
+		/*
+		//Method implementation = Display.class.getDeclaredMethod("getImplementation");
+		Method implementation = CocoaComponent.class.getDeclaredMethod("getImplementation");
 		implementation.setAccessible(true);
 		Object displayImpl = implementation.invoke(null);
 		
@@ -166,18 +173,19 @@ public class MCTouchBar {
 			// Iterate through fields until we found the window
 			if (!f.getName().isEmpty()) {
 				f.setAccessible(true);
-				if (f.getName() == "window") {
+				if (f.getName().equals("window")) {
 					logger.info("NSWindow Found!");
 					ByteBuffer buffer = (ByteBuffer) f.get(displayImpl);
-					long windowId = buffer.getLong(0);
-					
-					return windowId;
+
+                    return buffer.getLong(0); //windowId
 				}
 			}
 		}
 		
 		logger.info("Can't find NSWindow");
 		return -1;
+
+		 */
 		
 	}
 	
