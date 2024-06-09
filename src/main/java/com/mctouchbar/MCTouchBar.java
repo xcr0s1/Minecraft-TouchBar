@@ -1,38 +1,23 @@
-package mctouchbar;
+package com.mctouchbar;
 
+import com.sun.jna.platform.unix.X11;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 import com.thizzer.jtouchbar.JTouchBar;
 import com.thizzer.jtouchbar.item.TouchBarItem;
 import com.thizzer.jtouchbar.item.view.TouchBarButton;
-import com.thizzer.jtouchbar.item.view.TouchBarView;
-import com.thizzer.jtouchbar.item.GroupTouchBarItem;
-import com.thizzer.jtouchbar.item.TouchBarItem;
 
 import com.thizzer.jtouchbar.common.Image;
 import com.thizzer.jtouchbar.common.Color;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import org.lwjgl.*;
-import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.nio.*;
 
 import java.io.InputStream;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
 //import com.apple.jobjc.appkit.NSApplication;
 //import com.apple.jobjc.appkit.NSApplicationClass;
 //import com.apple.jobjc.foundation.NSString;
@@ -41,11 +26,12 @@ import java.util.ListIterator;
 
 
 
-@Mod(modid = MCTouchBar.MODID, name = MCTouchBar.NAME, version = MCTouchBar.VERSION)
+
+@Mod("NeoMCTouchBar")
 public class MCTouchBar {
 
-	public static final String MODID = "mctouchbar";
-	public static final String NAME = "MCTouchBar";
+	public static final String MODID = "neomctouchbar";
+	public static final String NAME = "NeoMCTouchBar";
 	public static final String VERSION = "1.0.0";
 
 	public static Logger logger;
@@ -72,7 +58,7 @@ public class MCTouchBar {
 	public static Image INVIS_IMAGE = getTouchBarImageForPath("/assets/invisibility.png");
 
 
-	@EventHandler
+	@SubscribeEvent
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
@@ -168,6 +154,8 @@ public class MCTouchBar {
 		// Useful to link the TouchBar to the window
 		
 		long output = -1;
+
+		//FIXME
 		Method implementation = Display.class.getDeclaredMethod("getImplementation");
 		implementation.setAccessible(true);
 		Object displayImpl = implementation.invoke(null);

@@ -1,32 +1,19 @@
-package mctouchbar;
+package com.mctouchbar;
 
 
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemArrow;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ArrowItem;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import com.thizzer.jtouchbar.JTouchBar;
-import com.thizzer.jtouchbar.item.TouchBarItem;
-import com.thizzer.jtouchbar.item.view.TouchBarButton;
-
-import com.thizzer.jtouchbar.common.Image;
 import com.thizzer.jtouchbar.common.Color;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import javax.sound.sampled.*;
-
+import java.util.Objects;
 
 
 public class PlayerEvent {
@@ -49,53 +36,63 @@ public class PlayerEvent {
 
 	@SubscribeEvent
 	public void onClientTick(TickEvent.PlayerTickEvent event) {
-			final EntityPlayer player = Minecraft.getMinecraft().player;
+			final Player player = Minecraft.getInstance().player;
 			
 			if (event.phase == TickEvent.Phase.START && event.side.isClient()) {
 				
 				
 				// Health indicator
-				
-				int health = (int) player.getHealth();
+
+                assert player != null;
+                int health = (int) player.getHealth();
 				if (health != oldHealth) {
 					MCTouchBar.touchBarButtonLifeImg.setTitle(""+health);
 				}
 				oldHealth = health;
 
 				healthEffectName = "";
-				player.getActivePotionEffects().forEach((effect) -> {
-					String name = effect.getEffectName();
-					if (name == "effect.absorption" || name == "effect.poison" || name == "effect.wither" || name == "effect.regeneration" || name == "effect.healthBoost" || healthEffectName == "effect.resistance") {
+				movementEffectName = "";
+				player.getActiveEffects().forEach((effect) -> {
+					String name = effect.getEffect().toString(); //FIXME
+					if (Objects.equals(name, "effect.absorption") || Objects.equals(name, "effect.poison") || Objects.equals(name, "effect.wither") || Objects.equals(name, "effect.regeneration") || Objects.equals(name, "effect.healthBoost") || Objects.equals(healthEffectName, "effect.resistance")) {
 						healthEffectName = name;
-					} else if (name == "effect.moveSpeed" || name == "effect.moveSlowdown" || name == "effect.levitation" || name == "effect.jump" || name == "effect.invisibility") {
+					} else if (Objects.equals(name, "effect.moveSpeed") || Objects.equals(name, "effect.moveSlowdown") || Objects.equals(name, "effect.levitation") || Objects.equals(name, "effect.jump") || Objects.equals(name, "effect.invisibility")) {
 						movementEffectName = name;
 					}
 					
 				});
 				
-				if (healthEffectName != oldHealthEffectName) {
-					if (healthEffectName == "effect.absorption") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.ABSO_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.YELLOW);
-					} else if (healthEffectName == "effect.poison") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.POISON_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.GREEN);
-					} else if (healthEffectName == "effect.wither") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.WITHER_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.PURPLE);
-					} else if (healthEffectName == "effect.regeneration") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.HEALTH_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.MAGENTA);
-					} else if (healthEffectName == "effect.healthBoost") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.BOOST_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.ORANGE);
-					} else if (healthEffectName == "effect.resistance") {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.RESISTANCE_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.GRAY);
-					} else {
-						MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.HEALTH_IMAGE);
-						MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.RED);
-					}	
+				if (!Objects.equals(healthEffectName, oldHealthEffectName)) {
+                    switch (healthEffectName) {
+                        case "effect.absorption" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.ABSO_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.YELLOW);
+                        }
+                        case "effect.poison" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.POISON_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.GREEN);
+                        }
+                        case "effect.wither" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.WITHER_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.PURPLE);
+                        }
+                        case "effect.regeneration" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.HEALTH_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.MAGENTA);
+                        }
+                        case "effect.healthBoost" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.BOOST_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.ORANGE);
+                        }
+                        case "effect.resistance" -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.RESISTANCE_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.GRAY);
+                        }
+                        case null, default -> {
+                            MCTouchBar.touchBarButtonLifeImg.setImage(MCTouchBar.HEALTH_IMAGE);
+                            MCTouchBar.touchBarButtonLifeImg.setBezelColor(Color.RED);
+                        }
+                    }
 				}
 				oldHealthEffectName = healthEffectName;
 
@@ -104,10 +101,10 @@ public class PlayerEvent {
 				// Arrows counter
 				
 				int count = 0;
-				for (int slot = 0; slot < player.inventory.getSizeInventory(); slot++) {
-					ItemStack stack = player.inventory.getStackInSlot(slot);
+				for (int slot = 0; slot < Inventory.INVENTORY_SIZE; slot++) {
+					ItemStack stack = player.getInventory().getItem(slot);
 
-					if (stack.getItem() instanceof ItemArrow) {
+					if (stack.getItem() instanceof ArrowItem) {
 							count = count + stack.getCount();
 					}
 				}
@@ -122,40 +119,47 @@ public class PlayerEvent {
 				// Coordinates
 				
 				
-				int x = (int) player.posX;
-				int y = (int) player.posY;
-				int z = (int) player.posZ;
-				String coords = "" + x + " " + y + " " + z;
-				if (coords != oldCoords) {
+				int x = (int) player.position().get(Direction.Axis.X);
+				int y = (int) player.position().get(Direction.Axis.Y);
+				int z = (int) player.position().get(Direction.Axis.Z);
+				String coords = x + " " + y + " " + z;
+				if (!coords.equals(oldCoords)) {
 					MCTouchBar.touchBarCoordsButton.setTitle(coords);
 				}
 				
-				movementEffectName = "";
-				if (oldMovementEffectName != movementEffectName) {
-					if (movementEffectName == "effect.moveSpeed") {
-						MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.SPEED_IMAGE);
-						MCTouchBar.touchBarCoordsButton.setImagePosition(2);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.CYAN);
-					} else if (movementEffectName == "effect.moveSlowdown") {
-						MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.SLOW_IMAGE);
-						MCTouchBar.touchBarCoordsButton.setImagePosition(2);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.BLUE);
-					} else if (movementEffectName == "effect.jump") {
-						MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.JUMP_IMAGE);
-						MCTouchBar.touchBarCoordsButton.setImagePosition(2);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.GREEN);
-					} else if (movementEffectName == "effect.levitation") {
-						MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.LEVI_IMAGE);
-						MCTouchBar.touchBarCoordsButton.setImagePosition(2);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.MAGENTA);
-					} else if (movementEffectName == "effect.invisibility") {
-						MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.INVIS_IMAGE);
-						MCTouchBar.touchBarCoordsButton.setImagePosition(2);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.CYAN);
-					} else {
-						MCTouchBar.touchBarCoordsButton.setImagePosition(0);
-						MCTouchBar.touchBarCoordsButton.setBezelColor(Color.BLACK);
-					}
+
+				if (!Objects.equals(oldMovementEffectName, movementEffectName)) {
+                    switch (movementEffectName) {
+                        case "effect.moveSpeed" -> {
+                            MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.SPEED_IMAGE);
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(2);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.CYAN);
+                        }
+                        case "effect.moveSlowdown" -> {
+                            MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.SLOW_IMAGE);
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(2);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.BLUE);
+                        }
+                        case "effect.jump" -> {
+                            MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.JUMP_IMAGE);
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(2);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.GREEN);
+                        }
+                        case "effect.levitation" -> {
+                            MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.LEVI_IMAGE);
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(2);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.MAGENTA);
+                        }
+                        case "effect.invisibility" -> {
+                            MCTouchBar.touchBarCoordsButton.setImage(MCTouchBar.INVIS_IMAGE);
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(2);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.CYAN);
+                        }
+                        case null, default -> {
+                            MCTouchBar.touchBarCoordsButton.setImagePosition(0);
+                            MCTouchBar.touchBarCoordsButton.setBezelColor(Color.BLACK);
+                        }
+                    }
 				}
 				oldMovementEffectName = movementEffectName;
 
